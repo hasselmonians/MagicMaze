@@ -71,7 +71,8 @@ int feedir        = 0;
 int beepir        = 0;
 int trialtype     = 0;
 
-void setup() {
+void setup()
+{
   // First attach the servo controller
   Serial.begin(9600); // baud rate = 9600
   pwm.begin();
@@ -106,14 +107,17 @@ void setup() {
   pinMode(51, OUTPUT); // treadmill start
   digitalWrite(51, 1);
 
-
  // the speaker pin will be pin 22
 }
 
-void loop() {
-  // if i'm waiting for input
-  if (myturn == 0) {
-    if (Serial.available() > 0) {
+void loop()
+{
+  // waiting for input
+  if (myturn == 0)
+  {
+
+    if (Serial.available() > 0)
+    {
       // read input
       serialdata = Serial.parseInt();
 
@@ -121,43 +125,52 @@ void loop() {
       // IF we're setting up the trial  //
       //                                //
 
-      if (serialdata < 5) {
+      // accept trial type as 1-4
+      if (serialdata < 5)
+      {
         // setup all the study trials
-        // position study spinner (for serialdata = 1 or 2, servo will go to open
+        // position study spinner (for serialdata = 1 or 2), servo will go to open
         pwm.setPWM(1, 0, servopos[trialobj[serialdata]]);
-        //give it time to position
+        // give it time to position
         delay(100);
         // open the study door (door 0, up to 300 ms)
         pwm.setPWM(0, 0, 300);
-        // change to its my turn, reset beams
-        myturn = 1; taskphase = 1; beamstat = 0; holdtime = 0;
-        feedir = 0; beepir = 0;
+
+        // change to my turn
+        myturn        = 1;
+        taskphase     = 1;
+
+        // reset general variables
+        beamstat    = 0;
+        holdtime    = 0;
+        feedir      = 0;
+        beepir      = 0;
       }
-
-      //                                              //
-      // this is the return if the delay just stopped //
-      // This sets up the test phase                  //
-
-
-      if (serialdata > 10 && serialdata < 20) {
+      else if (serialdata > 10 && serialdata < 20)
+      {
         // open treadmill door
         pwm.setPWM(2, 0, servopos[2]);
+
         // set the trial type
-        trialtype = serialdata - 10;
+        trialtype   = serialdata - 10;
+
         // set up trial
-        myturn = 1; taskphase = 3;
-        feedir = 0; holdtime = 0;
-        beepir = 0;
+        myturn      = 1;
+        taskphase   = 3;
+        holdtime    = 0;
+        feedir      = 0;
+        beepir      = 0;
       }
-
-      //       //
-      // RESET //
-      //       //
-
-      if (serialdata == 30) {
+      else if (serialdata == 30)
+      {
         // go back to first trial
         myturn = 0; taskphase = 1; feedir = 0; beepir = 0; holdtime = 0;
       }
+    }
+    else
+    {
+      // Serial.available() !> 0
+      return;
     }
   }
   // ////////////////////////////////////////////////
