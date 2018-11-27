@@ -73,12 +73,13 @@ int trialtype     = 0;
 
 void setup() {
   // First attach the servo controller
-  Serial.begin(9600);
+  Serial.begin(9600); // baud rate = 9600
   pwm.begin();
   pwm.setPWMFreq(60); // have to make sure this is right for our servos
   delay(10);
 
   // load all IR readers
+  // set up pins in the input-pullup mode
   pinMode(2, INPUT_PULLUP); //study beads
   pinMode(3, INPUT_PULLUP); //study yarn
   pinMode(4, INPUT_PULLUP); //treadmill
@@ -86,20 +87,20 @@ void setup() {
   pinMode(6, INPUT_PULLUP); //test yarn
 
   // need to test whether we can bridge these pins directly into the map box
-  pinMode(23, OUTPUT); //study beads water
+  // set up all output pins and initialize to default values
+  pinMode(23, OUTPUT); // study beads water
   digitalWrite(23, 1); delay(100);
 
-  pinMode(27, OUTPUT); //study yarn water
+  pinMode(27, OUTPUT); // study yarn water
   digitalWrite(27, 1); delay(100);
 
-  pinMode(33, OUTPUT); //test beads water
+  pinMode(33, OUTPUT); // test beads water
   digitalWrite(33, 1); delay(100);
 
-  pinMode(37, OUTPUT); //test yarn water
+  pinMode(37, OUTPUT); // test yarn water
   digitalWrite(37, 1); delay(100);
 
-
-  pinMode(13, OUTPUT); //feeding indicator
+  pinMode(13, OUTPUT); // feeding indicator
   digitalWrite(13, 0); delay(100);
 
   pinMode(51, OUTPUT); // treadmill start
