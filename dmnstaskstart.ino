@@ -42,18 +42,18 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 
 // okay each of the trialtypes
 // 1 is beads front, 2 is beads back, 3 yarn front, 4 is yarn back
-int trialobj[] = {1, 1, 2, 2};
-int trialpos[] = {1, 2, 1, 2}; // this is the beads/yarn, front/back
-int servopos[] = {150, 600};
+int trialobj[]    = {1, 1, 2, 2};
+int trialpos[]    = {1, 2, 1, 2}; // this is the beads/yarn, front/back
+int servopos[]    = {150, 600};
 
 // match irs with trial types
-int studypins[] = {2, 2, 3, 3}; //study beads study yarn
-int testcpins[] = {5, 5, 6, 6}; //test beads test ayarn
-int testicpins[] = {6, 6, 5, 5}; //test yarn test beads
-int studyfeed[] = {7, 7, 8, 8}; //stidy beads study yarn
-int testfeed[] = {9, 9, 10, 10}; //test beads test yarn
-int testbeep[] = {10, 10, 9, 9}; //test yarn test beads
-double holdtime = 0;
+int studypins[]   = {2, 2, 3, 3}; //study beads study yarn
+int testcpins[]   = {5, 5, 6, 6}; //test beads test ayarn
+int testicpins[]  = {6, 6, 5, 5}; //test yarn test beads
+int studyfeed[]   = {7, 7, 8, 8}; //stidy beads study yarn
+int testfeed[]    = {9, 9, 10, 10}; //test beads test yarn
+int testbeep[]    = {10, 10, 9, 9}; //test yarn test beads
+double holdtime   = 0;
 
 // five servos, this is servo lut
 // s0 = study door
@@ -63,13 +63,13 @@ double holdtime = 0;
 // s4 = return door
 
 // set up our general variables
-int taskphase = 1;
-int myturn = 0;
-int beamstat = 0;
-int serialdata = 0;
-int feedir = 0;
-int beepir = 0;
-int trialtype = 0;
+int taskphase     = 1;
+int myturn        = 0;
+int beamstat      = 0;
+int serialdata    = 0;
+int feedir        = 0;
+int beepir        = 0;
+int trialtype     = 0;
 
 void setup() {
   // First attach the servo controller
@@ -88,20 +88,20 @@ void setup() {
   // need to test whether we can bridge these pins directly into the map box
   pinMode(23, OUTPUT); //study beads water
   digitalWrite(23, 1); delay(100);
-  
+
   pinMode(27, OUTPUT); //study yarn water
   digitalWrite(27, 1); delay(100);
-  
+
   pinMode(33, OUTPUT); //test beads water
   digitalWrite(33, 1); delay(100);
-  
+
   pinMode(37, OUTPUT); //test yarn water
   digitalWrite(37, 1); delay(100);
 
-  
+
   pinMode(13, OUTPUT); //feeding indicator
   digitalWrite(13, 0); delay(100);
-  
+
   pinMode(51, OUTPUT); // treadmill start
   digitalWrite(51, 1);
 
@@ -137,7 +137,7 @@ void loop() {
       // this is the return if the delay just stopped //
       // This sets up the test phase                  //
 
-    
+
       if (serialdata > 10 && serialdata < 20) {
         // open treadmill door
         pwm.setPWM(2, 0, servopos[2]);
@@ -196,7 +196,7 @@ void loop() {
         // pwm.setPWM(0, 0, 0);
       }
     }
-    
+
     if (taskphase == 2) {
       // listen to pin
       beamstat = !digitalRead(4);
@@ -206,7 +206,7 @@ void loop() {
         Serial.println(2); myturn = 0; holdtime = 0;
       }
     }
-    
+
     if (taskphase == 3) {
       // listen to pins
       feedir = feedir + !digitalRead(testfeed[trialtype]);
