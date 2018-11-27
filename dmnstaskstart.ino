@@ -137,8 +137,8 @@ void loop()
         pwm.setPWM(0, 0, 300);
 
         // change to my turn
-        myturn        = 1;
-        taskphase     = 1;
+        myturn      = 1;
+        taskphase   = 1;
 
         // reset general variables
         beamstat    = 0;
@@ -166,6 +166,12 @@ void loop()
         // go back to first trial
         myturn = 0; taskphase = 1; feedir = 0; beepir = 0; holdtime = 0;
       }
+      else
+      {
+        // unexpected behavior
+        Serial.println("[INFO] serialdata value is unexpected")
+        return;
+      }
     }
     else
     {
@@ -173,99 +179,126 @@ void loop()
       return;
     }
   }
+
   // ////////////////////////////////////////////////
   //                                               //
   // end my turn half, this will loop many times** //
   //                                               //
   // ////////////////////////////////////////////////
-  if (myturn == 1) {
-    if (taskphase == 1) {
-      // listen to pin, beamstat ==1 when beam is broken
+
+  if (myturn == 1)
+  {
+    if (taskphase == 1)
+    {
+      // waiting for rat to do nose-poke
+      // listen to pin, beamstat == 1 when beam is broken
       beamstat = !digitalRead(studypins[serialdata]);
+
       // if pin broken add to hold time, otherwise reset
-      if (beamstat == 1) {
+      if (beamstat == 1)
+      {
         ++holdtime;
       }
-      else {
+      else
+      {
         holdtime = 0;
       }
 
-      // if he held long enough continuously % i think this is about 9600 loops per second
-      if (holdtime > 10000) {
+      // if the rat holds for 1.041 s = 10000 symbols / 9600 Bd
+      if (holdtime > 10000)
+      {
         // give water
         digitalWrite(studyfeed[serialdata], 0);
-        delay(1000);
+        delay(10);
         digitalWrite(studyfeed[serialdata], 1);
-        delay(100);
+        delay(10);
 
-        // setup test spinner
+        // set up test spinner
         pwm.setPWM(3, 0, servopos[trialpos[serialdata]]);
         // advance task phase
-        taskphase = 2; beamstat = 0;
+        taskphase   = 2;
+
+        // reset general variables
+        beamstat    = 0;
+
         // signal the matlab that he poked his nose
         Serial.println(1);
+        delay(10);
+
         //close all the doors
         // pwm.setPWM(4, 0, 0);
-        delay(100);
         // pwm.setPWM(0, 0, 0);
       }
     }
-
-    if (taskphase == 2) {
+    else if (taskphase == 2)
+    {
       // listen to pin
-      beamstat = !digitalRead(4);
+      beamstat      = !digitalRead(4);
       // if pin is broken,
-      if (beamstat == 1) {
+      if (beamstat == 1)
+      {
         // send treadmill response, go to phase 3 and wait for input
-        Serial.println(2); myturn = 0; holdtime = 0;
+        Serial.println(2);
+
+        // set to rat's turn
+        myturn      = 0;
+
+        // reset the beam counting time
+        holdtime    = 0;
+
+        return;
       }
     }
 
-    if (taskphase == 3) {
+    if (taskphase == 3)
+    {
       // listen to pins
       feedir = feedir + !digitalRead(testfeed[trialtype]);
       beepir = beepir + !digitalRead(testbeep[trialtype]);
 
       // if we broke anything we can close the door
-      if (feedir + beepir > 1 && feedir + beepir < 5) {
+      if (feedir + beepir > 1 && feedir + beepir < 5)
+      {
         pwm.setPWM(3, 0, 0);
       }
-      // if one beak is broken
+
+      // if one beam is broken
       // if a beam is broken for long enough
-      if (feedir > 10000 || beepir > 10000) {
-        // if its the feed ir beam
-        if (feedir > 10000) {
+      if (feedir > 10000 || beepir > 10000)
+      {
+        // if it's the feed ir beam
+        if (feedir > 10000)
+        {
           // feed rat
           digitalWrite(testfeed[trialtype], 0);
-          delay(1000);
+          delay(100);
+
           digitalWrite(testfeed[trialtype], 1);
           // flip correct pin on and off
           digitalWrite(13, 1);
           digitalWrite(13, 0);
 
+          // print to console
           Serial.println(10);
         }
-        else {
+        else
+        {
           tone(22, 261); // middle c !!!!
           delay(500);
           noTone(22);
+
+          // print to console
           Serial.println(20);
         }
+
         delay(2000);
         // open return door
         pwm.setPWM(4, 0, 600);
         taskphase = 1; myturn = 0;
         feedir = 0; beepir = 0;
+
+        return;
       }
     }
   }
 }
-
-
-
-
-
-
-// it may be possible to do a very simple serial comm where you send like a
-// 1 and then a random seed for the trial starter
-// and then maybe we can stop if you send another input
