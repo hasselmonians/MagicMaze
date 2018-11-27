@@ -1,21 +1,22 @@
+%% Set up the serial port
+port        = seriallist;
+laserserial = serial(port, 'BaudRate', 9600);
 
-% communicating through serial
-temp=seriallist
-
-laserserial = serial(temp,'BaudRate',9600);
+% open the I/O connection
 fopen(laserserial);
-fprintf(laserserial,'04');
 
+% determine the trial type
+trialtype   = '04';
+fprintf(laserserial, trialtype);
 
-temp=fscanf(laserserial);
+% how long should we test?
+trialtime   = 2; % minutes
 
-
-for i=1:1000
-   % this asks whether the arduino sent any bytes
-    if laserserial.BytesAvailable>0
-        % this reads those bytes
-        fscanf(laserserial)
-        fprintf('\n');
+%% Wait for output
+while time < (trialtime*60)
+    if laserserial.BytesAvailable > 0
+        output = fscanf(laserserial, '%d');
+        disp(output)
     end
-    pause(2);
+    pause(1);
 end
