@@ -9,4 +9,10 @@ function setSerial(self, port)
   self.serial_port.BytesAvailableFcnMode  = 'byte';
   self.serial_port.BytesAvailableFcn      = {@self.serialCallback};
 
+  if self.gui
+    % do something
+  else
+    disp('[INFO] serial port opened')
+  end
+
 end % setSerial
