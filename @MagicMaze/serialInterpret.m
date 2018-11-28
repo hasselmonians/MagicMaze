@@ -31,7 +31,7 @@ function str = serialInterpret(self, num)
     end
 
   otherwise
-    disp('[WARN] procotol not recognized')
+    disp('[WARN] protocol not recognized')
     return
   end % switch
 
