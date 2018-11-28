@@ -68,7 +68,15 @@ end % Access = protected
 
     end % setSerial
 
+    function set.exp_state(self, str)
 
+      if self.make_gui
+        % update the GUI somehow
+      else
+        disp(['[INFO] experiment state: ' str]);
+      end
+
+    end % set.exp_state
 
   end % methods
 
