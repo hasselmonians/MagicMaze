@@ -52,14 +52,14 @@ end % Access = protected
 
     end % constructor
 
-    function self = set.serial_port(self, port)
+    function setSerial(self, port)
 
       if nargin < 2
         port = seriallist;
         self.serial_port = serial(port, 'BaudRate', 9600);
       end
 
-    end % set.serial_port
+    end % setSerial
 
   end % methods
 
