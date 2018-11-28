@@ -10,6 +10,7 @@ classdef MagicMaze < handle & matlab.mixin.CustomDisplay
 
     serial_port@serial
     protocol@char
+    exp_state@char
 
   end % properties
 
@@ -49,6 +50,8 @@ end % Access = protected
         assignin('base', 'mm', self);
       end
 
+      % set the experimental state to "startup"
+      self.exp_state = 'startup';
 
     end % constructor
 
@@ -56,7 +59,11 @@ end % Access = protected
 
       if nargin < 2
         port = seriallist;
-        self.serial_port = serial(port, 'BaudRate', 9600);
+        self.serial_port                        = serial(port, 'BaudRate', 9600);
+        self.serial_port.BytesAvailableFcnCount = 4;
+        self.serial_port.BytesAvailableFcnMode  = 'byte';
+        self.serial_port.BytesAvailableFcn      = {@self.serialCallback};
+
       end
 
     end % setSerial
@@ -64,8 +71,6 @@ end % Access = protected
   end % methods
 
   methods (Static)
-
-
 
   end % static methods
 
