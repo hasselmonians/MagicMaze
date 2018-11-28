@@ -169,7 +169,7 @@ void loop()
       else
       {
         // unexpected behavior
-        Serial.println("[INFO] serialdata value is unexpected")
+        Serial.println("[INFO] serialdata value is unexpected");
         return;
       }
     }
