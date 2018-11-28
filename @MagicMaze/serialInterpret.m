@@ -13,7 +13,7 @@ function str = serialInterpret(self, num)
     num = str2double(num);
   end
 
-  switch self.procotol
+  switch self.protocol
 
   case 'dmnstaskstart'
     if num == 1
