@@ -11,16 +11,16 @@ classdef MagicMaze < handle & matlab.mixin.CustomDisplay
     serial_port@serial
     protocol@char
     exp_state@char
-
   end % properties
 
   properties (SetAccess = protected)
 
-end % SetAccess = protected
+  end % SetAccess = protected
 
   properties (Access = protected)
+    gui@logical
 
-end % Access = protected
+  end % Access = protected
 
   methods
 
@@ -40,7 +40,10 @@ end % Access = protected
           error('Need MATLAB 2014b or newer to run')
         end
 
+        self.gui = true;
         self.makeGUI;
+      else
+        self.gui = false;
       end
 
       % for stability, automatically assign to a variable if not done so
@@ -55,9 +58,19 @@ end % Access = protected
 
     end % constructor
 
+    function delete(self)
+
+      if ~isempty(self.serial_port)
+        fclose(self.serial_port)
+      end
+
+    end % delete
+
     function set.exp_state(self, str)
 
-      if self.make_gui
+      self.exp_state = str;
+
+      if self.gui
         % update the GUI somehow
       else
         disp(['[INFO] experiment state: ' str]);
