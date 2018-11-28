@@ -9,7 +9,7 @@ classdef MagicMaze < handle & matlab.mixin.CustomDisplay
   properties
 
     serial_port@serial
-    protocol
+    protocol@char
 
   end % properties
 
