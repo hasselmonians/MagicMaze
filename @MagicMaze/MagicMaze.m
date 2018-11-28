@@ -30,7 +30,7 @@ classdef MagicMaze < handle & matlab.mixin.CustomDisplay
       % check to see if a graphical user interface should be made
       % default to the dmnstaskstart protocol
       if nargin == 0
-        make_gui = true;
+        make_gui = false;
         self.protocol = 'dmnstaskstart';
       end
 
