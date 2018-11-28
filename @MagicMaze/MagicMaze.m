@@ -8,8 +8,8 @@ classdef MagicMaze < handle & matlab.mixin.CustomDisplay
 
   properties
 
-  serial_port@serial
-  protocol@char
+    serial_port@serial
+    protocol
 
   end % properties
 
@@ -30,7 +30,7 @@ end % Access = protected
       % default to the dmnstaskstart protocol
       if nargin == 0
         make_gui = true;
-        self.procotol = 'dmnstaskstart';
+        self.protocol = 'dmnstaskstart';
       end
 
       if make_gui
