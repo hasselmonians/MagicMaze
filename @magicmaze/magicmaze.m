@@ -1,11 +1,15 @@
 % magicmaze.m
 % Alec Hoyland
 
+% serial_port: the serial object that reads and writes to the Arduino controller
+% protocol: the name of the code running on the Arduino -- determines how I/O should be translated between MATLAB and the controller
+
 classdef magicmaze < handle & matlab.mixin.CustomDisplay
 
   properties
 
   serial_port@serial
+  protocol@char
 
   end % properties
 
@@ -23,8 +27,10 @@ end % Access = protected
     function self = magicmaze(make_gui)
 
       % check to see if a graphical user interface should be made
+      % default to the dmnstaskstart protocol
       if nargin == 0
         make_gui = true;
+        self.procotol = 'dmnstaskstart';
       end
 
       if make_gui
@@ -43,6 +49,7 @@ end % Access = protected
         assignin('base', 'mm', self);
       end
 
+
     end % constructor
 
     function self = set.serial_port(self, port)
@@ -55,3 +62,12 @@ end % Access = protected
     end % set.serial_port
 
   end % methods
+
+  methods (Static)
+
+
+
+  end % static methods
+
+
+end % classdef
