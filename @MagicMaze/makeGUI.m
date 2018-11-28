@@ -1,5 +1,8 @@
 function self = makeGUI(self)
 
+    % NOTE: currently unstable, do not use
+    return;
+
     % check to make sure the GUI doesn't already exist
     f = get(0, 'Children');
     for ii = 1:length(f)
