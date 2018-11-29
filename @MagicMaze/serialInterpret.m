@@ -15,17 +15,17 @@ function str = serialInterpret(self, num)
 
   switch self.protocol
 
-  case 'dmnstaskstart'
+  case 'dmns'
     if num == 1
-      str = 'Rat is doing nose poke...';
+      str = 'Setting up trial...';
       return
     elseif num == 2
       str = 'Treadmill is running...';
       return
-    elseif num == 10
+    elseif num == 3
       str = 'Rat made correct choice...';
       return
-    elseif num == 20
+    elseif num == 4
       str = 'Rat made incorrect choice...';
       return
     end
