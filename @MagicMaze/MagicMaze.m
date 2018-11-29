@@ -34,7 +34,6 @@ classdef MagicMaze < handle & matlab.mixin.CustomDisplay
       % default to the dmnstaskstart protocol
       if nargin == 0
         make_gui = false;
-        self.protocol = 'dmnstaskstart';
       end
 
       if make_gui
@@ -58,6 +57,8 @@ classdef MagicMaze < handle & matlab.mixin.CustomDisplay
 
       % set the experimental state to "startup"
       self.exp_state = 'startup';
+      % set default protocol
+      self.protocol = 'dmnstaskstart';
 
     end % constructor
 
@@ -80,6 +81,17 @@ classdef MagicMaze < handle & matlab.mixin.CustomDisplay
       end
 
     end % set.exp_state
+
+    function set.protocol(self, str)
+
+      protocols = {'dmns'};
+      if any(strcmp(str, protocols))
+        self.protocol = str;
+      else
+        disp('[ERROR] protocol not recognized')
+      end
+
+    end % set.protocol
 
   end % methods
 
