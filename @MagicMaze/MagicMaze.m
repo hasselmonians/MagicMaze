@@ -11,6 +11,9 @@ classdef MagicMaze < handle & matlab.mixin.CustomDisplay
     serial_port@serial
     protocol@char
     exp_state@char
+    trials@double
+    outcomes@double
+
   end % properties
 
   properties (SetAccess = protected)
