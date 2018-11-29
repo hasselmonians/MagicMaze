@@ -109,25 +109,17 @@ void loop ()
       // read the input as an integer
       serialdata = Serial.parseInt();
 
-      // Are the data about the trial type?
-      if (serialdata < 5)
-      {
-        // expect the read data to be the trial type
-        // position the spinner
-        pwm.setPWM(1, 0, servopos[trialobj[serialdata]]);
-        delay(100);
+      // expect the read data to be the trial type
+      // position the spinner
+      pwm.setPWM(1, 0, servopos[trialobj[serialdata]]);
+      delay(100);
 
-        // open the study door
-        pwm.setPWM(0, 0, 300);
+      // open the study door
+      pwm.setPWM(0, 0, 300);
 
-        // advance task phase
-        taskphase = 2;
-        return;
-      }
-      else // serialdata > 5
-      {
-        // TODO
-      }
+      // advance task phase
+      taskphase = 2;
+      return;
     }
     else
     {
