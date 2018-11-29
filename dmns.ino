@@ -13,6 +13,12 @@
 // s3 -> test spinner
 // s4 -> return door
 
+// *** Task Phase ***
+// 1 -> Set up the current trial.
+// 2 -> Rat does a nose poke and runs on the treadmill.
+// 3 -> Rat opens the gate.
+// 4 -> Rat makes a choice.
+
 
 #include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
@@ -171,7 +177,7 @@ void loop ()
 
   else if (taskphase == 3)
   {
-    // listen to beam near door
+    // listen to treadmill beam
     beamstat  = !digitalRead(4);
 
     // if beam is broken, send treadmill response
@@ -179,6 +185,8 @@ void loop ()
     {
       // signal MATLAB that the rat did a nose poke
       Serial.println(2);
+
+      // TODO: RUN THE TREADMILL!!!
 
       // advance task phase
       taskphase = 4;
