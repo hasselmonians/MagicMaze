@@ -4,11 +4,11 @@
 // 1 -> beads front
 // 2 -> beads back
 // 3 -> yarn front
-// 4 -> yarn back
-
-// *** Servos ***
-// s0 -> study door
-// s1 -> study spinner
+// 4 -> yarn back            ________
+//                          / _____  |
+// *** Servos ***           ||    _|_|_    < study door
+// s0 -> study door         ||   |     |
+// s1 -> study spinner      ||   |    0|0  < study spinner
 // s2 -> delay door
 // s3 -> test spinner
 // s4 -> return door
@@ -20,18 +20,20 @@
 // 4 -> Rat makes a choice.
 
 
-#include <Wire.h>
-#include <Adafruit_PWMServoDriver.h>
+#include <Wire.h> // for the i dont know?
+#include <Adafruit_PWMServoDriver.h>  // This is for the servo driver
 
-Adafruit_PWMDriver pwm = Adafruit_PWMDriver();
+Adafruit_PWMDriver pwm = Adafruit_PWMDriver(); // start the servo driver
+// set the pwm duty cycles
 #define SERVOMIN 150;
 #define SERVOMAX 600;
 
+// need to incorporate builtin timer here
 // How long does the rat need to hold nose-poke?
-#define BEAMTIME 19200;
+#define BEAMTIME 9600;
 // For how long does the rat get water?
-#define WATERTIME 9600;
-#define FEEDTIME 9600;
+#define WATERTIME 3200; // a third of a second ish
+#define FEEDTIME 3200;  // a third of a second ish
 
 // define the trial types and objects
 
@@ -43,9 +45,14 @@ int servopos[]    = {SERVOMIN, SERVOMAX};
 int studypins[]   = {2, 2, 3, 3}; //study beads study yarn
 int testcpins[]   = {5, 5, 6, 6}; //test beads test ayarn
 int testicpins[]  = {6, 6, 5, 5}; //test yarn test beads
+
+
+// match the correct output pins
 int studyfeed[]   = {7, 7, 8, 8}; //stidy beads study yarn
 int testfeed[]    = {9, 9, 10, 10}; //test beads test yarn
-int testbeep[]    = {10, 10, 9, 9}; //test yarn test beads
+
+// dont need the incorrect solenoids, we wont trigger them
+//int testbeep[]    = {10, 10, 9, 9}; //test yarn test beads
 
 // general variables
 int taskphase     = 1;
@@ -78,26 +85,30 @@ void setup ()
 
   // set up output pins
   // speaker is pin 22
-  pinMode(23, OUTPUT); // study beads water
-  pinMode(27, OUTPUT); // study yarn water
-  pinMode(33, OUTPUT); // test beads water
-  pinMode(37, OUTPUT); // test yarn water
-  pinMode(13, OUTPUT); // feeding indicator
+  pinMode(7, OUTPUT); // study beads water
+  pinMode(8, OUTPUT); // study yarn water
+  pinMode(9, OUTPUT); // test beads water
+  pinMode(10, OUTPUT); // test yarn water
+
+  pinMode(11, OUTPUT); // feeding indicator
 
   // initialize output pins to defaults
-  digitalWrite(23, 1);
-  digitalWrite(27, 1);
-  digitalWrite(33, 1);
-  digitalWrite(37, 1);
-  digitalWrite(13, 0);
+  digitalWrite(7, 1);
+  digitalWrite(8, 1);
+  digitalWrite(9, 1);
+  digitalWrite(10, 1);
+  // only goes to the map box, so it can stay low
+  digitalWrite(11, 0);
 
-  // chirp
-  for (int ii = 0; ii > 5; ii++)
+  // chirp 5 times in 1 second
+  for (int ii = 0; ii > 6; ii++)
   {
     tone(22, 261);
-    delay(500);
+    delay(100);
+    noTone(22);
+    delay(100);
   }
-  noTone(22);
+
 
 } // setup()
 
@@ -106,13 +117,13 @@ void loop ()
 
   if (taskphase == 1)
   {
-    // We are waiting for the rat.
+    // We are waiting for the study trial setup
 
     // Are there any data waiting for us?
     if (Serial.available() > 0)
     {
       // There are data waiting for us.
-      // read the input as an integer
+      // read the input as an integer thats 1 through 4
       serialdata = Serial.parseInt();
 
       // expect the read data to be the trial type
@@ -125,6 +136,7 @@ void loop ()
 
       // advance task phase
       taskphase = 2;
+      // not sure you need to return here
       return;
     }
     else
@@ -136,29 +148,29 @@ void loop ()
 
   else if (taskphase == 2)
   {
-      // wait for the rat to do a nose-poke
-      // when beamstat == 1, the beam is broken
-      // serialdata -> trial type
-      beamstat = !digitalRead(studypins[serialdata]);
+    // wait for the rat to do a nose-poke
+    // when beamstat == 1, the beam is broken
+    // serialdata -> trial type
+    beamstat = !digitalRead(studypins[serialdata]);
 
-      // the rat must hold for BEAMTIME (in 1/Bd)
-      if (beamstat == 1)
-      {
-        holdtime++;
-      }
-      else
-      {
-        holdtime = 0;
-      }
+    // the rat must hold for BEAMTIME (in 1/Bd)
+    if (beamstat == 1)
+    {
+      holdtime++;
+    }
+    else
+    {
+      holdtime = 0;
+    }
 
-      if (holdtime > BEAMTIME)
-      {
-        // give water
-        digitalWrite(studyfeed[serialdata], 0);
-        delay(WATERTIME);
-        digitalWrite(studyfeed[serialdata], 1);
-        delay(WATERTIME);
-      }
+    if (holdtime > BEAMTIME)
+    {
+      // give water
+      digitalWrite(studyfeed[serialdata], 0);
+      delay(WATERTIME);
+      digitalWrite(studyfeed[serialdata], 1);
+      // delay(WATERTIME);
+
 
       // set up the test spinner
       pwm.setPWM(3, 0, servopos[trialpos[serialdata]]);
@@ -170,9 +182,11 @@ void loop ()
       // advance task phase
       taskphase = 3;
 
-      // signal MATLAB that the rat did a nose poke
+      // signal MATLAB that the rat did a nose poke and we fed him
       Serial.println(1);
-      delay(1000);
+      // cant wait too long because the rat may have already proceeded to the tradmill
+      delay(100);
+    }
   }
 
   else if (taskphase == 3)
@@ -186,7 +200,7 @@ void loop ()
       // signal MATLAB that the rat did a nose poke
       Serial.println(2);
 
-      // TODO: RUN THE TREADMILL!!!
+      // TODO: RUN THE TREADMILL, wait for a computer signal to open the door
 
       // advance task phase
       taskphase = 4;
@@ -206,7 +220,7 @@ void loop ()
     feedir    = feedir + !digitalRead(testfeed[trialtype]);
     beepir    = beepir + !digitalRead(testfeed[trialtype]);
 
-    // close door in case of error
+    // close door once either beam is broken so he cant go back to study
     if (feedir + beepir > 1 && feedir + beepir < 5)
     {
       pwm.setPWM(3, 0, 0);
