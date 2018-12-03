@@ -8,6 +8,9 @@ function doExperiment(self)
 
   for ii = 1:length(self.trials)
 
+    % experiment is **not** done
+    self.isDone = false;
+
     % send trial information through the serial port
     fprintf(self.serial_port, num2str(uint8(self.trials(ii))));
 
