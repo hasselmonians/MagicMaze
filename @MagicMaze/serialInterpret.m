@@ -33,7 +33,7 @@ function str = serialInterpret(self, num)
     end
 
   otherwise
-    disp('[WARN] protocol not recognized')
+    disp('[ERROR] unkown protocol')
     return
   end % switch
 
