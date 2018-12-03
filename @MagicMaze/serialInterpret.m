@@ -24,9 +24,11 @@ function str = serialInterpret(self, num)
       return
     elseif num == 3
       str = 'Rat made correct choice...';
+      self.isDone = true;
       return
     elseif num == 4
       str = 'Rat made incorrect choice...';
+      self.isDone = true;
       return
     end
 

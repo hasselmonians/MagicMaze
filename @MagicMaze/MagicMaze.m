@@ -13,6 +13,7 @@ classdef MagicMaze < handle & matlab.mixin.CustomDisplay
     exp_state@char
     trials@double
     outcomes@double
+    isDone@logical
 
   end % properties
 
@@ -58,7 +59,9 @@ classdef MagicMaze < handle & matlab.mixin.CustomDisplay
       % set the experimental state to "startup"
       self.exp_state = 'startup';
       % set default protocol
-      self.protocol = 'dmnstaskstart';
+      self.protocol = 'dmns';
+      % set asynchronous waiting to not done
+      self.isDone = false;
 
     end % constructor
 
