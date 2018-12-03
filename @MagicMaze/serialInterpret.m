@@ -21,6 +21,7 @@ function str = serialInterpret(self, num)
       return
     elseif num == 2
       str = 'Treadmill is running...';
+      self.isTreadmill = true;
       return
     elseif num == 3
       str = 'Rat made correct choice...';
