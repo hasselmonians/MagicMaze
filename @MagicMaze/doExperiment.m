@@ -19,7 +19,7 @@ function doExperiment(self)
 
     switch self.protocol
     case 'dmns'
-      if self.exp_state == 3
+      if self.exp_num == 3
         self.outcomes(ii) = 1;
       else
         self.outcomes(ii) = 0;
