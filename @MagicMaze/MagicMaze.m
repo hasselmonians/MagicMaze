@@ -14,6 +14,7 @@ classdef MagicMaze < handle & matlab.mixin.CustomDisplay
     trials@double
     outcomes@double
     isDone@logical
+    isTreadmill@logical
 
   end % properties
 

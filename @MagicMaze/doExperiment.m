@@ -14,6 +14,14 @@ function doExperiment(self)
     % send trial information through the serial port
     fprintf(self.serial_port, num2str(uint8(self.trials(ii))));
 
+    % TODO: receive from Arduino
+    waitfor(self, 'isTreadmill', logical(1));
+
+    % TODO: run treadmill for some amount of time
+
+    waitfor(self, 'isTreadmill', logical(0));
+    % TODO: send to Arduino
+
     % wait for a response
     waitfor(self, 'isDone', logical(1));
 
