@@ -23,6 +23,7 @@ classdef MagicMaze < handle & matlab.mixin.CustomDisplay
 
   properties (Access = protected)
     gui@logical
+    exp_num@double
 
   end % Access = protected
 
