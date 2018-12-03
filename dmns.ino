@@ -171,7 +171,7 @@ void loop ()
       taskphase = 3;
 
       // signal MATLAB that the rat did a nose poke
-      Serial.println(1);
+      Serial.print(1);
       delay(1000);
   }
 
@@ -184,7 +184,7 @@ void loop ()
     if (beamstat == 1)
     {
       // signal MATLAB that the rat did a nose poke
-      Serial.println(2);
+      Serial.print(2);
 
       // TODO: RUN THE TREADMILL!!!
 
@@ -227,7 +227,7 @@ void loop ()
         digitalWrite(13, 0);
 
         // signal MATLAB that the rat was fed
-        Serial.println(3);
+        Serial.print(3);
       }
       else
       {
@@ -238,7 +238,7 @@ void loop ()
         noTone(22);
 
         // signal MATLAB that the rat wasn't fed
-        Serial.println(4);
+        Serial.print(4);
       }
 
       // delay a bit before next trial
