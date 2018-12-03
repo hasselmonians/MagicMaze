@@ -49,7 +49,7 @@ int testbeep[]    = {10, 10, 9, 9}; //test yarn test beads
 
 // general variables
 int taskphase     = 1;
-int myturn        = 0;
+int breaktime     = 0;
 int beamstat      = 0;
 int serialdata    = 0;
 int feedir        = 0;
@@ -103,6 +103,16 @@ void setup ()
 
 void loop ()
 {
+
+  if (breaktime == 1)
+  {
+    // pause the experiment until breaktime != 1
+    if (Serial.available() > 0)
+    {
+      breaktime = Serial.parseInt();
+    }
+    return;
+  }
 
   if (taskphase == 1)
   {
@@ -186,7 +196,8 @@ void loop ()
       // signal MATLAB that the rat did a nose poke
       Serial.print(2);
 
-      // TODO: RUN THE TREADMILL!!!
+      // while treadmill is running, take a break
+      breaktime = 1;
 
       // advance task phase
       taskphase = 4;
