@@ -5,6 +5,7 @@ function doExperiment(self)
   % updates the experimental state in self.exp_state
 
   self.outcomes = NaN(length(self.trials), 1);
+  start(self.t);
 
   for ii = 1:length(self.trials)
 
@@ -37,6 +38,7 @@ function doExperiment(self)
 
   end % ii
 
+  stop(self.t);
   disp('[INFO] experiment completed')
 
   % sing the song of our people

@@ -20,6 +20,8 @@ classdef MagicMaze < handle & matlab.mixin.CustomDisplay
 
   properties (SetAccess = protected)
 
+    t@timer;
+
   end % SetAccess = protected
 
   properties (Access = protected)
@@ -64,6 +66,10 @@ classdef MagicMaze < handle & matlab.mixin.CustomDisplay
       self.protocol = 'dmns';
       % set asynchronous waiting to not done
       self.isDone = false;
+
+      % set up the timer object
+      self.t = timer('Period', 0.1, 'ExecutionMode', 'fixedSpacing', 'TasksToExecute', Inf);
+      self.t.TimerFcn = @(~, ~) self.serialCallback;
 
     end % constructor
 
