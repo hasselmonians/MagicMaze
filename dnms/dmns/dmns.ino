@@ -30,8 +30,7 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 // How long does the rat need to hold nose-poke?
 int BEAMTIME = 1;
 // For how long does the rat get water?
-int WATERTIME = 10;
-int FEEDTIME = 10;
+int FEEDTIME = 1000;
 
 // define the trial types and objects
 
@@ -65,6 +64,21 @@ void setup ()
   pwm.begin();
   pwm.setPWMFreq(60);
 
+  // door to study
+  pwm.setPWM(0, 0, 150);
+  delay(50);
+  // study spinner
+  pwm.setPWM(1, 0, 150);
+  delay(50);
+  // delay door
+  pwm.setPWM(2, 0, 150);
+  delay(50);
+  // test spinner
+  pwm.setPWM(3, 0, 150);
+  delay(50);
+  // return arm access
+  pwm.setPWM(4, 0, 150);
+  delay(50);
   // hang on
   delay(10);
 
@@ -107,7 +121,11 @@ void loop ()
     // pause the experiment until breaktime != 1
     if (Serial.available() > 0)
     {
+      // if received the breaktime door, open delay door
       breaktime = Serial.parseInt();
+      // turn off delay light
+      digitalWrite(11, 1);
+      pwm.setPWM(2, 0, 600);
     }
     return;
   }
@@ -129,14 +147,14 @@ void loop ()
       delay(100);
 
       // open the study door
-      pwm.setPWM(0, 0, 300);
+      pwm.setPWM(0, 0, 600);
 
       // advance task phase
       taskphase = 2;
 
 
       tone(22, 261);
-      delay(500);
+      delay(100);
       noTone(22);
       return;
     }
@@ -146,7 +164,7 @@ void loop ()
       return;
     }
   }
-
+  // this is the phase where were waiting for him to study
   else if (taskphase == 2)
   {
     // wait for the rat to do a nose-poke
@@ -171,32 +189,35 @@ void loop ()
       delay(1000);
       digitalWrite(studyfeed[serialdata], 1);
 
+
+      // we know hes out of the study and return doors way
+      pwm.setPWM(0, 0, 150);
+      delay(50);
+      pwm.setPWM(4, 0, 150);
+      delay(50);
+      // set up the test spinner
+      pwm.setPWM(3, 0, servopos[trialpos[serialdata]]);
+
+      // reset general veriables
+      beamstat  = 0;
+      holdtime  = 0;
+
+      // advance task phase
+      taskphase = 3;
+
+      // signal MATLAB that the rat did a nose poke
+      Serial.println(1);
+
+      tone(22, 261);
+      delay(100);
+      noTone(22);
     }
     else
     {
       return;
     }
-
-
-    // set up the test spinner
-    pwm.setPWM(3, 0, servopos[trialpos[serialdata]]);
-
-    // reset general veriables
-    beamstat  = 0;
-    holdtime  = 0;
-
-    // advance task phase
-    taskphase = 3;
-
-    // signal MATLAB that the rat did a nose poke
-    Serial.println(1);
-    delay(1000);
-
-    tone(22, 261);
-    delay(500);
-    noTone(22);
   }
-
+  // this is the phsae where were waiting for him to enter the treadmill
   else if (taskphase == 3)
   {
     // listen to treadmill beam
@@ -210,13 +231,15 @@ void loop ()
 
       // while treadmill is running, take a break
       breaktime = 1;
+      // indicate this is delay time
+      digitalWrite(11, 0);
 
       // advance task phase
       taskphase = 4;
 
 
       tone(22, 261);
-      delay(500);
+      delay(100);
       noTone(22);
       return;
     }
@@ -226,7 +249,7 @@ void loop ()
       return;
     }
   }
-
+  // where we wait for him to respond
   else if (taskphase == 4)
   {
     // listen to beam near reward
@@ -235,8 +258,8 @@ void loop ()
 
     // close door in case of error
     if (feedir + beepir > 1 && feedir + beepir < 5)
-    {
-      pwm.setPWM(3, 0, 0);
+    { // close door when either is ampled
+      pwm.setPWM(2, 0, 150);
     }
 
     // if one beam is broken for long enough
@@ -246,13 +269,12 @@ void loop ()
       {
         // give reward to rat
         digitalWrite(testfeed[trialtype], 0);
+        digitalWrite(13, 1);
         delay(FEEDTIME);
         digitalWrite(testfeed[trialtype], 1);
+        digitalWrite(13, 0);
 
         // flicker pin 13 (feeding indicator)
-        digitalWrite(13, 1);
-        delay(1000);
-        digitalWrite(13, 0);
 
         // signal MATLAB that the rat was fed
         Serial.print(3);
@@ -270,7 +292,7 @@ void loop ()
       }
 
       // delay a bit before next trial
-      delay(500);
+
 
       // open return door
       pwm.setPWM(4, 0, 600);
@@ -279,6 +301,7 @@ void loop ()
       taskphase     = 1;
       feedir        = 0;
       beepir        = 0;
+      delay(500);
       return;
     }
   }
