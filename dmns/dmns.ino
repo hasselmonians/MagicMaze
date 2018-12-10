@@ -28,9 +28,9 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 #define SERVOMAX 600;
 
 // How long does the rat need to hold nose-poke?
-int BEAMTIME = 1;
+int BEAMTIME = 2000;
 // For how long does the rat get water?
-int FEEDTIME = 1000;
+int FEEDTIME = 120;
 
 // define the trial types and objects
 
@@ -39,12 +39,12 @@ int trialpos[]    = {0, 1, 0, 1};
 int servopos[]    = {150, 600};
 
 // match IR beams with trial types
-int studypins[]   = {2, 2, 3, 3}; //study beads study yarn
-int testcpins[]   = {5, 5, 6, 6}; //test beads test ayarn
-int testicpins[]  = {6, 6, 5, 5}; //test yarn test beads
-int studyfeed[]   = {7, 7, 8, 8}; //stidy beads study yarn
-int testfeed[]    = {9, 9, 10, 10}; //test beads test yarn
-int testbeep[]    = {10, 10, 9, 9}; //test yarn test beads
+int studypins[]   = {26, 26, 25, 25}; //study beads study yarn
+int testcpins[]   = {32, 32, 33, 33}; //test beads test ayarn
+int testicpins[]  = {33, 33, 32, 32}; //test yarn test beads
+int studyfeed[]   = {50, 50, 51, 51}; //stidy beads study yarn
+int testfeed[]    = {53, 53, 52, 52}; //test beads test yarn
+int testbeep[]    = {9, 9, 9, 9}; //test yarn test beads
 
 // general variables
 int taskphase     = 1;
@@ -65,44 +65,44 @@ void setup ()
   pwm.setPWMFreq(60);
 
   // door to study
-  pwm.setPWM(0, 0, 150);
-  delay(50);
-  // study spinner
-  pwm.setPWM(1, 0, 150);
-  delay(50);
-  // delay door
-  pwm.setPWM(2, 0, 150);
-  delay(50);
-  // test spinner
   pwm.setPWM(3, 0, 150);
   delay(50);
-  // return arm access
+  // study spinner
+  pwm.setPWM(5, 0, 150);
+  delay(50);
+  // delay door
   pwm.setPWM(4, 0, 150);
+  delay(50);
+  // test spinner
+  pwm.setPWM(2, 0, 150);
+  delay(50);
+  // return arm access
+  pwm.setPWM(7, 0, 150);
   delay(50);
   // hang on
   delay(10);
 
   // load all IR readers
   // set up pins in the input-pullup mode
-  pinMode(2, INPUT_PULLUP); //study beads
-  pinMode(3, INPUT_PULLUP); //study yarn
-  pinMode(4, INPUT_PULLUP); //treadmill
-  pinMode(5, INPUT_PULLUP); //test beads
-  pinMode(6, INPUT_PULLUP); //test yarn
+  pinMode(26 , INPUT_PULLUP); //study beads
+  pinMode(25, INPUT_PULLUP); //study yarn
+  pinMode(27, INPUT_PULLUP); //treadmill
+  pinMode(32, INPUT_PULLUP); //test beads
+  pinMode(33, INPUT_PULLUP); //test yarn
 
   // set up output pins
   // speaker is pin 22
-  pinMode(23, OUTPUT); // study beads water
-  pinMode(27, OUTPUT); // study yarn water
-  pinMode(33, OUTPUT); // test beads water
-  pinMode(37, OUTPUT); // test yarn water
-  pinMode(13, OUTPUT); // feeding indicator
+  pinMode(50, OUTPUT); // study beads water
+  pinMode(51, OUTPUT); // study yarn water
+  pinMode(53, OUTPUT); // test beads water
+  pinMode(52, OUTPUT); // test yarn water
+  pinMode(13, OUTPUT); // feeding indicator???
 
   // initialize output pins to defaults
-  digitalWrite(23, 1);
-  digitalWrite(27, 1);
-  digitalWrite(33, 1);
-  digitalWrite(37, 1);
+  digitalWrite(50, 1);
+  digitalWrite(51, 1);
+  digitalWrite(53, 1);
+  digitalWrite(52, 1);
   digitalWrite(13, 0);
 
   // chirp
@@ -125,7 +125,7 @@ void loop ()
       breaktime = Serial.parseInt();
       // turn off delay light
       digitalWrite(11, 1);
-      pwm.setPWM(2, 0, 600);
+      pwm.setPWM(4, 0, 600);
     }
     return;
   }
@@ -143,11 +143,11 @@ void loop ()
       trialtype = serialdata;
       // expect the read data to be the trial type
       // position the spinner
-      pwm.setPWM(1, 0, servopos[trialobj[serialdata]]);
+      pwm.setPWM(5, 0, servopos[trialobj[serialdata]]);
       delay(100);
 
       // open the study door
-      pwm.setPWM(0, 0, 600);
+      pwm.setPWM(3, 0, 600);
 
       // advance task phase
       taskphase = 2;
@@ -191,12 +191,12 @@ void loop ()
 
 
       // we know hes out of the study and return doors way
-      pwm.setPWM(0, 0, 150);
+      pwm.setPWM(3, 0, 150);
       delay(50);
-      pwm.setPWM(4, 0, 150);
+      pwm.setPWM(7, 0, 150);
       delay(50);
       // set up the test spinner
-      pwm.setPWM(3, 0, servopos[trialpos[serialdata]]);
+      pwm.setPWM(2, 0, servopos[trialpos[serialdata]]);
 
       // reset general veriables
       beamstat  = 0;
@@ -221,7 +221,7 @@ void loop ()
   else if (taskphase == 3)
   {
     // listen to treadmill beam
-    beamstat  = !digitalRead(4);
+    beamstat  = !digitalRead(27);
 
     // if beam is broken, send treadmill response
     if (beamstat == 1)
@@ -259,7 +259,7 @@ void loop ()
     // close door in case of error
     if (feedir + beepir > 1 && feedir + beepir < 5)
     { // close door when either is ampled
-      pwm.setPWM(2, 0, 150);
+      pwm.setPWM(4, 0, 150);
     }
 
     // if one beam is broken for long enough
@@ -295,7 +295,7 @@ void loop ()
 
 
       // open return door
-      pwm.setPWM(4, 0, 600);
+      pwm.setPWM(7, 0, 600);
 
       // reset the task phase and indicators
       taskphase     = 1;
