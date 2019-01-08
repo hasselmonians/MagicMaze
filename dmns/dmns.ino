@@ -121,11 +121,14 @@ void loop ()
     // pause the experiment until breaktime != 1
     if (Serial.available() > 0)
     {
-      // if received the breaktime door, open delay door
+      // set breaktime (0 turns off breaktime and allows program to continue)
       breaktime = Serial.parseInt();
+
       // turn off delay light
-      digitalWrite(11, 1);
-      pwm.setPWM(4, 0, 600);
+      if (digitalRead(11) == 0)
+      {
+        digitalWrite(11, 1);
+      }
     }
     return;
   }
@@ -151,11 +154,6 @@ void loop ()
 
       // advance task phase
       taskphase = 2;
-
-
-      tone(22, 261);
-      delay(100);
-      noTone(22);
       return;
     }
     else
@@ -164,7 +162,7 @@ void loop ()
       return;
     }
   }
-  // this is the phase where were waiting for him to study
+
   else if (taskphase == 2)
   {
     // wait for the rat to do a nose-poke
@@ -189,8 +187,6 @@ void loop ()
       delay(1000);
       digitalWrite(studyfeed[serialdata], 1);
 
-
-      // we know hes out of the study and return doors way
       pwm.setPWM(3, 0, 150);
       delay(50);
       pwm.setPWM(7, 0, 150);
@@ -207,19 +203,16 @@ void loop ()
 
       // signal MATLAB that the rat did a nose poke
       Serial.println(1);
-
-      tone(22, 261);
-      delay(100);
-      noTone(22);
     }
     else
     {
       return;
     }
   }
-  // this is the phsae where were waiting for him to enter the treadmill
+
   else if (taskphase == 3)
   {
+    // wait for the rat to approach the treadmill
     // listen to treadmill beam
     beamstat  = !digitalRead(27);
 
@@ -231,16 +224,13 @@ void loop ()
 
       // while treadmill is running, take a break
       breaktime = 1;
+
       // indicate this is delay time
       digitalWrite(11, 0);
 
       // advance task phase
       taskphase = 4;
 
-
-      tone(22, 261);
-      delay(100);
-      noTone(22);
       return;
     }
     else
@@ -249,9 +239,13 @@ void loop ()
       return;
     }
   }
-  // where we wait for him to respond
+
   else if (taskphase == 4)
   {
+    // the treadmill time has completed (breaktime == 0)
+    // open the door
+    pwm.setPWM(4, 0, 600);
+
     // listen to beam near reward
     feedir    = feedir + !digitalRead(testcpins[trialtype]);
     beepir    = beepir + !digitalRead(testicpins[trialtype]);
@@ -267,14 +261,16 @@ void loop ()
     {
       if (feedir > BEAMTIME)
       {
+        // rat made correct choice
         // give reward to rat
         digitalWrite(testfeed[trialtype], 0);
         digitalWrite(13, 1);
+
         delay(FEEDTIME);
+
+        // turn off feeding
         digitalWrite(testfeed[trialtype], 1);
         digitalWrite(13, 0);
-
-        // flicker pin 13 (feeding indicator)
 
         // signal MATLAB that the rat was fed
         Serial.print(3);
