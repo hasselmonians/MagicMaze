@@ -49,7 +49,7 @@ mm.setSerial;
 If a port is not specified, `MagicMaze` will pick the first one. Otherwise, acquire the port by viewing the available ones using `seriallist`, and do:
 
 ```matlab
-mm.setSerial(port)
+mm.setSerial('port')
 ```
 
 ## Performing an experiment
