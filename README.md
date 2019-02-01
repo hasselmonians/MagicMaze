@@ -59,3 +59,5 @@ The `doExperiment` function is used to begin an experiment. It uses the specifie
 This means that each protocol needs to correspond exactly with the embedded Arduino-flavored C++ code on the microcontroller. For convenience, we have put this code in its own folder within this project.
 
 As more protocols are developed, they can be added here.
+
+> PS: winny is cool
